@@ -58,6 +58,9 @@ RUN mkdir -p /app/superset-frontend
 RUN mkdir -p /app/superset/assets
 COPY ./docker/frontend-mem-nag.sh /
 COPY ./superset-frontend/package* /app/superset-frontend/
+
+RUN chmod +x /frontend-mem-nag.sh
+
 RUN /frontend-mem-nag.sh \
         && cd /app/superset-frontend \
         && npm ci
