@@ -62,7 +62,6 @@ RUN chmod +x /frontend-mem-nag.sh
 
 RUN /frontend-mem-nag.sh \
         && cd /app/superset-frontend \
-        && npm cache clean \
         && npm ci
 
 COPY ./superset-frontend /app/superset-frontend
