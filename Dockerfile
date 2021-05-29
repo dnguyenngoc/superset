@@ -1,20 +1,3 @@
-#
-# Licensed to the Apache Software Foundation (ASF) under one or more
-# contributor license agreements.  See the NOTICE file distributed with
-# this work for additional information regarding copyright ownership.
-# The ASF licenses this file to You under the Apache License, Version 2.0
-# (the "License"); you may not use this file except in compliance with
-# the License.  You may obtain a copy of the License at
-#
-#    http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
-
 ######################################################################
 # PY stage that simply does a pip install on our requirements
 ######################################################################
@@ -31,8 +14,6 @@ RUN mkdir /app \
             libecpg-dev \
         && rm -rf /var/lib/apt/lists/*
 
-# First, we just wanna install requirements, which will allow us to utilize the cache
-# in order to only build if and only if requirements change
 COPY ./requirements/*.txt  /app/requirements/
 COPY setup.py MANIFEST.in README.md /app/
 COPY superset-frontend/package.json /app/superset-frontend/
@@ -110,6 +91,8 @@ RUN cd /app \
 
 COPY ./docker/docker-entrypoint.sh /usr/bin/
 
+RUN chmod +x /usr/bin/docker-entrypoint.sh
+
 WORKDIR /app
 
 USER superset
@@ -127,7 +110,11 @@ FROM lean AS dev
 ARG GECKODRIVER_VERSION=v0.28.0
 ARG FIREFOX_VERSION=88.0
 
+WORKDIR /app
+
 COPY ./requirements/*.txt ./docker/requirements-*.txt/ /app/requirements/
+COPY ./docker/docker-init.sh /app/docker-init.sh
+COPY ./docker/docker-bootstrap.sh /app/docker-bootstrap.sh
 
 USER root
 
@@ -148,19 +135,11 @@ RUN wget https://download-installer.cdn.mozilla.net/pub/firefox/releases/${FIREF
 # Cache everything for dev purposes...
 RUN cd /app \
     && pip install --no-cache -r requirements/docker.txt \
-    && pip install --no-cache -r requirements/requirements-local.txt || true
+    && pip install --no-cache -r requirements/requirements-local.txt || true \
+    && chmod +x /usr/bin/docker-entrypoint.sh \
+    && chmod +x docker-bootstrap.sh \
+    && chmod +x docker-init.sh 
+
 USER superset
 
-
-######################################################################
-# CI image...
-######################################################################
-FROM lean AS ci
-
-COPY --chown=superset ./docker/docker-bootstrap.sh /app/docker/
-COPY --chown=superset ./docker/docker-init.sh /app/docker/
-COPY --chown=superset ./docker/docker-ci.sh /app/docker/
-
-RUN chmod a+x /app/docker/*.sh
-
-CMD /app/docker/docker-ci.sh
+EXPOSE 8088
