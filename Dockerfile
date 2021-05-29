@@ -89,7 +89,7 @@ RUN cd /app \
         && chown -R superset:superset * \
         && pip install -e .
 
-COPY ./docker/docker-entrypoint.sh /usr/bin/
+COPY ./docker/docker-entrypoint.sh /usr/bin/docker-entrypoint.sh
 
 RUN chmod +x /usr/bin/docker-entrypoint.sh
 
@@ -113,6 +113,7 @@ ARG FIREFOX_VERSION=88.0
 WORKDIR /app
 
 COPY ./requirements/*.txt ./docker/requirements-*.txt/ /app/requirements/
+COPY ./docker/docker-entrypoint.sh /usr/bin/docker-entrypoint.sh
 COPY ./docker/docker-init.sh /app/docker-init.sh
 COPY ./docker/docker-bootstrap.sh /app/docker-bootstrap.sh
 

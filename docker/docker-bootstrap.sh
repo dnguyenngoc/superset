@@ -24,7 +24,7 @@ if [ "$CYPRESS_CONFIG" == "true" ]; then
     export SUPERSET_CONFIG=tests.superset_test_config
     export SUPERSET_TESTENV=true
     export ENABLE_REACT_CRUD_VIEWS=true
-    export SUPERSET__SQLALCHEMY_DATABASE_URI=postgresql+psycopg2://superset:1q2w3e4r@161.117.87.31:5432:5432/superset
+    export SUPERSET__SQLALCHEMY_DATABASE_URI=mysql://superset:1q2w3e4r@localhost:3306/superset
 fi
 #
 # Make sure we have dev requirements installed
