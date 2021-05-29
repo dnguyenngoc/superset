@@ -9,8 +9,8 @@ on:
 
 env:
   # Variable name
-  PROJECT_NAME: data-warehouse
-  SUPERSET: superset
+  PROJECT_NAME: superset
+  VERSION: latest
 
   # dockerhub container
   DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
@@ -34,9 +34,9 @@ jobs:
     # [Step-3] buid and tag image from Dockerfile
     - name: Build and tag the image
       run: |
-        docker build -t $SUPERSET-liberain -t $DOCKERHUB_USERNAME/$PROJECT_NAME:$SUPERSET-liberain ./
+        docker build -t $VERSION -t $DOCKERHUB_USERNAME/$PROJECT_NAME:$VERSION ./
     
     # [Step-4] Push image to docker hub
     - name: Push image to DockerHub
       run: |
-        docker push $DOCKERHUB_USERNAME/$PROJECT_NAME:$SUPERSET-liberain
+        docker push $DOCKERHUB_USERNAME/$PROJECT_NAME:$VERSION
